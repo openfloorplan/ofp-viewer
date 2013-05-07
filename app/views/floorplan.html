@@ -1,0 +1,49 @@
+<div id="map">
+    <div class="leaflet-top leaflet-right">
+        <select ui-select2 class="leaflet-control" ng-model="floorPlanSelection" data-placeholder="-- Select FloorPlan --" style="width:150px;" ng-change="onFloorPlanSelect();">
+            <option></option>
+            <option ng-repeat="(key, value) in floorplanList">{{value.name}}</option>
+        </select>
+    </div>
+    <div class="leaflet-bottom leaflet-left"><h6>Selection: {{hoverStatus}}</h6></div>
+</div>
+<div ui-modal ng-model="modalShown" id="myModal">
+    <div class="modal-header">
+        <h4>Space: {{selectedSpaceID}}</h4>
+    </div>
+    <div class="modal-body"  id="myModal-body">
+        <div class="container-fluid">
+            <div class="row-fluid">
+                <div class="span7" id="modal-space-view">
+                    <!--Body content-->
+                </div>
+                <div class="span3">
+                    <!--Sidebar content-->
+                    other stuff
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div class="modal-footer">
+        <div class="row-fluid">
+            <div class="btn-toolbar span5">
+                <div class="btn-group">
+
+                    <a class="btn" tooltip-placement="top" tooltip="Info" href="#"><i class="icon-info-sign"></i></a>
+                    <a class="btn" tooltip-placement="top" tooltip="Edit" href="#"><i class="icon-edit"></i></a>
+                    <a class="btn" tooltip-placement="top" tooltip="Locate on Map" href="#"><i class="icon-map-marker"></i></a>
+                    <a class="btn" tooltip-placement="top" tooltip="Get QRCode" href="#"><i class="icon-qrcode"></i></a>
+                    <a class="btn" tooltip-placement="top" tooltip="Share" href="#"><i class="icon-share"></i></a>
+                </div>
+            </div>
+
+            <button class="btn btn-danger" ng-click="onModalCancel();"><i class="icon-remove icon-white"></i>&nbsp;Cancel</button>
+            <button class="btn btn-success" ng-click="onModalSave();"><i class="icon-ok icon-white"></i>&nbsp;Save</button>
+
+
+        </div>
+    </div>
+</div>
+
+

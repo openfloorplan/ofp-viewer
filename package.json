@@ -1,7 +1,14 @@
 {
-  "name": "ofp-viewer",
+  "author": "SYNCADD Systems, Inc.",
+  "name": "OpenFloorPlan Viewer",
   "version": "0.0.0",
-  "dependencies": {},
+  "dependencies": {
+    "d3": "3.0.5",
+    "phantom": "0.3.5",
+    "gm": "1.8.1",
+    "jsdom": "0.3.4",
+    "ofp.js": "git://github.com/openfloorplan/ofp.js.git"
+  },
   "devDependencies": {
     "grunt": "~0.4.1",
     "grunt-contrib-copy": "~0.4.0",
