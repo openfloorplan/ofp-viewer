@@ -1,6 +1,6 @@
 {
   "author": "SYNCADD Systems, Inc.",
-  "name": "OpenFloorPlan Viewer",
+  "name": "ofp-viewer",
   "version": "0.0.0",
   "dependencies": {
     "d3": "3.0.5",

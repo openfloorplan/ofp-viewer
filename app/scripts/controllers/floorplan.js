@@ -39,7 +39,7 @@ floorplanApp.controller('FloorplanCtrl', function ($scope) {
 
         d3.html($scope.fileSVGPath + name + $scope.fileOL, function (data) {
 
-            var svg, fp, viewBox, overlayPane;
+            var svg, fp, viewBox, overlayPane, layerTypes;
 
             overlayPane = d3.select($scope.map.getPanes().markerPane); //attaching to Leaflets marker pane
 
@@ -47,8 +47,15 @@ floorplanApp.controller('FloorplanCtrl', function ($scope) {
 
             svg = d3.select("svg");
 
+            //Create layer types for this floorplan
+            layerTypes = {};
+            layerTypes.spaces = new ofp.LayerType('Space', 'ofp-space', ['#bgspa_space_area_b']);
+            layerTypes.columns = new ofp.LayerType('Column', 'ofp-column', ['#Column', '#bgspa_column_area_b']);
+            layerTypes.constructions = new ofp.LayerType('Construction', 'ofp-construction', ['#Constructions', '#Frames']);
+            layerTypes.dimensionAnnotations = new ofp.LayerType('Dimension Annotations', 'ofp-annotations-dimensions',  ['#Dimension', '#A-ANNO-DIMS']);
+
             //initialize the floor plan
-            fp = new ofp.FloorPlan(overlayPane.node());
+            fp = new ofp.FloorPlan(overlayPane.node(), layerTypes);
 
             viewBox = fp.getViewBox();
 

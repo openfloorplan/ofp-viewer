@@ -11,7 +11,14 @@ Yeoman (including Bower and Grunt) https://github.com/yeoman/yeoman/wiki/Getting
 
 Install using:
 npm install
-bower update
+bower install
+
+Angular Bootstrap needs to be built seperately
+`cd /app/components/angular-ui-bootstrap
+npm install
+grunt
+grunt build`
+
 
 Run server with:
 grunt server
