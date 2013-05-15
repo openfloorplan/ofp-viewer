@@ -1,43 +1,102 @@
 floorplanApp.controller('FloorplanCtrl', function ($scope) {
     'use strict';
 
-    $scope.fileSVGPath = "./media/svg/";
-    $scope.filePNGPath = "./media/png/";
 
+    $scope.fileSVGPath = "/svg/";
+    $scope.filePNGPath = "/png/";
+
+    $scope.fileExt = ".svg";
     $scope.fileOL = "-ol.svg";
     $scope.fileBGUL = "-bg-ul.jpg";
     $scope.fileBGLL = "-bg-ll.jpg";
     $scope.fileBGUR = "-bg-ur.jpg";
     $scope.fileBGLR = "-bg-lr.jpg";
 
+    //Create layer types for SYNCADD floorplans
+    $scope.layerTypes = {};
+    $scope.layerTypes.spaces = new ofp.LayerType('Space', 'ofp-space', ['#bgspa_space_area_b']);
+    $scope.layerTypes.columns = new ofp.LayerType('Column', 'ofp-column', ['#Column', '#bgspa_column_area_b']);
+    $scope.layerTypes.constructions = new ofp.LayerType('Construction', 'ofp-construction', ['#Constructions', '#Frames']);
+    $scope.layerTypes.dimensionAnnotations = new ofp.LayerType('Dimension Annotations', 'ofp-annotations-dimensions',  ['#Dimension', '#A-ANNO-DIMS']);
+
     $scope.floorplanList = [
         {
-            name: "fd1-01",
+            name: "065-01",
+            path: "media/public",
             desc: ""
         },
         {
-            name: "cz-ja101-01",
-            desc: ""
+            name: "example2",
+            path: "media/internal",
+            desc: "auto-detect layer example"
         },
         {
             name: "fs-hi200-01",
-            desc: ""
+            path: "media/internal",
+            desc: "",
+            useTiles: false,
+            layerTypes: $scope.layerTypes
+        },
+        {
+            name: "fd1-01",
+            path: "media/internal",
+            desc: "large example",
+            useTiles: true,
+            layerTypes: $scope.layerTypes
+        },
+        {
+            name: "cz-ja101-01",
+            path: "media/internal",
+            desc: "",
+            useTiles: true,
+            layerTypes: $scope.layerTypes
         }
     ];
 
-    $scope.defaultFloorplan = "fs-hi200-01";
+    $scope.defaultFloorplan = "065-01";
+
+    //Need a custom CRS so we can set the pixel ratio
+    L.CRS.NonProjectedFloorPlan = L.extend({}, L.CRS, {
+        projection: L.Projection.LonLat,
+        transformation: new L.Transformation(1, 0, -1, 0),
+
+        scaleMult: 1,
+        scale: function (zoom) {
+            return Math.pow(2, zoom) * this.scaleMult;
+        },
+        setScaleMult: function (scaleMultiplier) {
+            this.scaleMult = scaleMultiplier;
+        }
+    });
 
     $scope.map = new L.Map('map', {
-        crs: L.CRS.Simple,
+        crs: L.CRS.NonProjectedFloorPlan,
         center: [0.0, 0.0],
         worldCopyJump: false
     });
 
-    $scope.map.attributionControl.addAttribution("&copy; SYNCADD Systems, Inc.");
+    $scope.map.attributionControl.addAttribution('&copy; SYNCADD Systems, Inc. - Public Demo Data from <a href="http://www.physics.ohio-state.edu/fac_engr/flr_plans.htm">http://www.physics.ohio-state.edu/fac_engr/flr_plans.htm</a>');
 
     $scope.loadFloorPlan = function (name) {
 
-        d3.html($scope.fileSVGPath + name + $scope.fileOL, function (data) {
+        var i, file, floorPlan;
+
+        for (i = 0; i < $scope.floorplanList.length; i++) {
+            if ($scope.floorplanList[i].name == name) {
+                floorPlan = $scope.floorplanList[i];
+            }
+        }
+
+        file = floorPlan.path + $scope.fileSVGPath + name;
+
+
+        //file = $scope.fileSVGPath + name;
+        if (floorPlan.useTiles) {
+            file = file + $scope.fileOL;
+        } else {
+            file = file + $scope.fileExt;
+        }
+        d3.html(file, function (data) {
 
             var svg, fp, viewBox, overlayPane, layerTypes;
 
@@ -47,15 +106,8 @@ floorplanApp.controller('FloorplanCtrl', function ($scope) {
 
             svg = d3.select("svg");
 
-            //Create layer types for this floorplan
-            layerTypes = {};
-            layerTypes.spaces = new ofp.LayerType('Space', 'ofp-space', ['#bgspa_space_area_b']);
-            layerTypes.columns = new ofp.LayerType('Column', 'ofp-column', ['#Column', '#bgspa_column_area_b']);
-            layerTypes.constructions = new ofp.LayerType('Construction', 'ofp-construction', ['#Constructions', '#Frames']);
-            layerTypes.dimensionAnnotations = new ofp.LayerType('Dimension Annotations', 'ofp-annotations-dimensions',  ['#Dimension', '#A-ANNO-DIMS']);
-
             //initialize the floor plan
-            fp = new ofp.FloorPlan(overlayPane.node(), layerTypes);
+            fp = new ofp.FloorPlan(overlayPane.node(), floorPlan.layerTypes);
 
             viewBox = fp.getViewBox();
 
@@ -73,155 +125,187 @@ floorplanApp.controller('FloorplanCtrl', function ($scope) {
                 llBounds = new L.LatLngBounds(southWest, center),
                 ulBounds = new L.LatLngBounds(new L.LatLng(centerY, minX), new L.LatLng(maxY, centerX)),
                 lrBounds = new L.LatLngBounds(new L.LatLng(minY, centerX), new L.LatLng(centerY, maxX)),
-                urBounds = new L.LatLngBounds(center, northEast);
+                urBounds = new L.LatLngBounds(center, northEast),
+                xRatio = 1,
+                yRatio = 1;
+
+            //calculate pixel ratio of the floorplan to the current browser container
+            var mapSize = $scope.map.getSize();
+
+            if (mapSize.x < viewBox.width || mapSize.y < viewBox.height){
+                xRatio = (viewBox.width / mapSize.x) / 100;
+                yRatio = (viewBox.height / mapSize.y) / 100;
+                if (xRatio > yRatio) {
+                    L.CRS.NonProjectedFloorPlan.setScaleMult(xRatio);
+                } else {
+                    L.CRS.NonProjectedFloorPlan.setScaleMult(yRatio);
+                }
+            }
+
+            //L.CRS.NonProjectedFloorPlan.setScaleMult(0.001);
 
             console.log(viewBox);
 
             //add background layers
-            $scope.backgroundLayerGroup = L.layerGroup([
-                L.imageOverlay($scope.filePNGPath + name + $scope.fileBGLL, llBounds),
-                L.imageOverlay($scope.filePNGPath + name + $scope.fileBGUL, ulBounds),
-                L.imageOverlay($scope.filePNGPath + name + $scope.fileBGLR, lrBounds),
-                L.imageOverlay($scope.filePNGPath + name + $scope.fileBGUR, urBounds)
-            ]).addTo($scope.map);
+            if (floorPlan.useTiles) {
+                $scope.backgroundLayerGroup = L.layerGroup([
+                    L.imageOverlay(floorPlan.path + $scope.filePNGPath + name + $scope.fileBGLL, llBounds),
+                    L.imageOverlay(floorPlan.path + $scope.filePNGPath + name + $scope.fileBGUL, ulBounds),
+                    L.imageOverlay(floorPlan.path + $scope.filePNGPath + name + $scope.fileBGLR, lrBounds),
+                    L.imageOverlay(floorPlan.path + $scope.filePNGPath + name + $scope.fileBGUR, urBounds)
+                ]).addTo($scope.map);
 
-            $scope.backgroundLayerGroup.eachLayer(function (layer) {
-                //layer.bringToBack();
-            });
-
+                $scope.backgroundLayerGroup.eachLayer(function (layer) {
+                    //layer.bringToBack();
+                });
+            }
 
             //set map bounds
+            $scope.map.setMaxBounds(bounds);
             $scope.map.fitBounds(bounds);
+            var mapBounds  = $scope.map.getBounds();
+            var boundsZoom = $scope.map.getBoundsZoom(bounds, true);
             svg.classed('leaflet-zoom-hide', true);
 
 
-            //Mouse hover on spaces
-            fp.spaces.elements.on("mouseover",
-                function (d, i) {
-                    var element = d3.select(this);
-                    element.style('fill', 'white');
-                    element.transition().duration(300).style('fill', 'red');
+            var spaces = null;
 
-                    element.attr("title", this.id);
-                    element.attr("ui-jq", "tooltip");
+            if (fp.spaces) {
+                spaces = fp.spaces;
+            }else if (fp.NET) {
+                spaces = fp.NET;
+            }
 
-                    $scope.$apply(function () {
-                        $scope.hoverStatus = element.attr('id');
+            if (spaces) {
+                //Mouse hover on spaces
+                spaces.elements.on("mouseover",
+                    function (d, i) {
+                        var element = d3.select(this);
+                        element.style('fill', 'white');
+                        element.transition().duration(300).style('fill', 'red');
+
+                        element.attr("title", this.id);
+                        element.attr("ui-jq", "tooltip");
+
+                        $scope.$apply(function () {
+                            $scope.hoverStatus = element.attr('id');
+                        });
+
+                        //$(this).tooltip({content: this.id, trigger: 'manual', title: this.id, html:true, animation: true, displayTarget: $('#floorplan')});
+                        //$(this).popover({content: this.id, trigger: 'manual', title: this.id, html:true, animation: true});
+                        //$(this).popover('show');
+
                     });
 
-                    //$(this).tooltip({content: this.id, trigger: 'manual', title: this.id, html:true, animation: true, displayTarget: $('#floorplan')});
-                    //$(this).popover({content: this.id, trigger: 'manual', title: this.id, html:true, animation: true});
-                    //$(this).popover('show');
-
-                });
-
-            fp.spaces.elements.on("mouseout",
-                function (d, i) {
-                    d3.select(this).transition().duration(300).style('fill', 'none');
-                    //$(this).popover('hide');
-                    $scope.$apply(function () {
-                        $scope.hoverStatus = "";
-                    });
-                });
-
-            fp.spaces.elements.on("click",
-                function (d, i) {
-                    var element, node, space, modalSVG, modalG, bbox, xMin, yMin, viewBoxStr;
-
-                    element = d3.select(this);
-                    $scope.$apply(function () {
-                        $scope.modalShown = true;
-                        $scope.selectedSpaceID = element.attr('id');
+                spaces.elements.on("mouseout",
+                    function (d, i) {
+                        d3.select(this).transition().duration(300).style('fill', 'none');
+                        //$(this).popover('hide');
+                        $scope.$apply(function () {
+                            $scope.hoverStatus = "";
+                        });
                     });
 
+                spaces.elements.on("click",
+                    function (d, i) {
+                        var element, node, space, modalSVG, modalG, bbox, xMin, yMin, viewBoxStr;
 
-                    //clone the space
-                    node = d3.select(this).node();
-                    space = d3.select(node.parentNode.insertBefore(node.cloneNode(true), node.nextSibling));
-                    modalSVG = d3.select('#modal-space-view')
-                        .append('svg');
-                    modalG = modalSVG.append('g');
-                    //.attr("width", "100%")
-                    //.attr("height", "100%");
-                    $(modalG[0][0])
-                        .append(space[0][0]);
-
-                    /*modalSVG.append('svg:path')
-                     .attr('d', line(shapeCoords) + 'Z')
-                     .style('stroke-width', 1)
-                     .style('stroke', 'steelblue')
-                     .style('fill', 'rgba(120, 220, 54, 0.2)');*/
-
-                    bbox = space[0][0].getBBox();
-
-                    xMin = bbox.x.toString();
-                    yMin = bbox.y.toString();
-
-                    viewBoxStr = xMin + " " + yMin + " " + bbox.width.toString() + " " + bbox.height.toString();
-
-                    //modalSVG.attr("transform", "translate(790,-475)");
-                    modalSVG.attr("viewBox", viewBoxStr);
+                        element = d3.select(this);
+                        $scope.$apply(function () {
+                            $scope.modalShown = true;
+                            $scope.selectedSpaceID = element.attr('id');
+                        });
 
 
-                    // Draw Lines
+                        //clone the space
+                        node = d3.select(this).node();
+                        space = d3.select(node.parentNode.insertBefore(node.cloneNode(true), node.nextSibling));
+                        modalSVG = d3.select('#modal-space-view')
+                            .append('svg');
+                        modalG = modalSVG.append('g');
+                        //.attr("width", "100%")
+                        //.attr("height", "100%");
+                        $(modalG[0][0])
+                            .append(space[0][0]);
 
-                    var line = d3.svg.line()
-                        .x(function (d) {
-                            return d[0];
-                        })
-                        .y(function (d) {
-                            return d[1];
-                        })
-                        .interpolate('linear');
+                        /*modalSVG.append('svg:path')
+                         .attr('d', line(shapeCoords) + 'Z')
+                         .style('stroke-width', 1)
+                         .style('stroke', 'steelblue')
+                         .style('fill', 'rgba(120, 220, 54, 0.2)');*/
 
-                    var lineData = [];
+                        bbox = space[0][0].getBBox();
 
-                    var redrawLine = function () {
-                        var svgLines = modalG.selectAll('path.my-lines')
-                            .data(lineData)
-                            .remove();
+                        xMin = bbox.x.toString();
+                        yMin = bbox.y.toString();
+
+                        viewBoxStr = xMin + " " + yMin + " " + bbox.width.toString() + " " + bbox.height.toString();
+
+                        //modalSVG.attr("transform", "translate(790,-475)");
+                        modalSVG.attr("viewBox", viewBoxStr);
 
 
-                        svgLines.enter()
-                            .append('path')
-                            .attr('d', line(lineData))
-                            .attr('class', 'my-lines')
-                            .attr('stroke', 'steelblue')
-                            .attr('stroke-width', 1);
+                        // Draw Lines
 
-                        svgLines.exit()
-                            .remove();
+                        var line = d3.svg.line()
+                            .x(function (d) {
+                                return d[0];
+                            })
+                            .y(function (d) {
+                                return d[1];
+                            })
+                            .interpolate('linear');
 
-                        //console.debug("lineData", lineData);
-                    };
+                        var lineData = [];
 
-                    var mouseIsDown = false;
-                    //$('#modal-space-view')
-                    //d3.select('#modal-space-view').select('svg')
+                        var redrawLine = function () {
+                            var svgLines = modalG.selectAll('path.my-lines')
+                                .data(lineData)
+                                .remove();
 
-                    modalSVG.on('mousedown', function () {
-                        mouseIsDown = true;
-                        lineData[0] = d3.mouse(modalSVG[0][0]);
-                        redrawLine();
-                    });
-                    modalSVG.on('mouseup', function () {
-                        mouseIsDown = false;
-                        lineData[1] = d3.mouse(modalSVG[0][0]);
-                        redrawLine();
-                    });
-                    modalSVG.on('mousemove', function () {
-                        if (mouseIsDown) {
+
+                            svgLines.enter()
+                                .append('path')
+                                .attr('d', line(lineData))
+                                .attr('class', 'my-lines')
+                                .attr('stroke', 'steelblue')
+                                .attr('stroke-width', 1);
+
+                            svgLines.exit()
+                                .remove();
+
+                            //console.debug("lineData", lineData);
+                        };
+
+                        var mouseIsDown = false;
+                        //$('#modal-space-view')
+                        //d3.select('#modal-space-view').select('svg')
+
+                        modalSVG.on('mousedown', function () {
+                            mouseIsDown = true;
+                            lineData[0] = d3.mouse(modalSVG[0][0]);
+                            redrawLine();
+                        });
+                        modalSVG.on('mouseup', function () {
+                            mouseIsDown = false;
                             lineData[1] = d3.mouse(modalSVG[0][0]);
                             redrawLine();
-                        }
+                        });
+                        modalSVG.on('mousemove', function () {
+                            if (mouseIsDown) {
+                                lineData[1] = d3.mouse(modalSVG[0][0]);
+                                redrawLine();
+                            }
+                        });
+
                     });
-
-                });
-
+            }
 
             // Use Leaflet to implement a D3 geographic projection.
             function project(val) {
                 var point = $scope.map.latLngToLayerPoint(new L.LatLng(val.lat, val.lng));
+                //var point = $scope.map.project(new L.LatLng(val.lat, val.lng));
+                //var point = $scope.map.latLngToContainerPoint(new L.LatLng(val.lat, val.lng));
                 return [point.x, point.y];
             }
 

@@ -3,7 +3,7 @@ dist
 .tmp
 .sass-cache
 app/components
-app/media
+app/media/internal
 workspace.xml
 atlassian-ide-plugin.xml
 ofp-viewer.iml

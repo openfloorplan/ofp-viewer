@@ -27,6 +27,14 @@ This code currently referencing a missing app/media folder that contains floorpl
 We are working on replacing the demos with data that we can share as part of the project.
 In the mean time, you will need to reconfigure it to use your own floorplans.
 
+## Demo Data
+
+The demo data included with this project is from http://www.physics.ohio-state.edu/fac_engr/flr_plans.html
+
+(It isn't easy to find good public CAD data, they deserve credit for publishing their CAD files online.)
+
+It is included for demonstration purposes only.
+
 ## License
 
 OpenFloorPlan Viewer (ofp-viewer) is released under the MIT license, see LICENSE file.
