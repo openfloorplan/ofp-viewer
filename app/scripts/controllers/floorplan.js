@@ -180,6 +180,9 @@ floorplanApp.controller('FloorplanCtrl', function ($scope) {
                 //Mouse hover on spaces
                 spaces.elements.on("mouseover",
                     function (d, i) {
+
+                        if ($scope.spaceUseDemo) { return; }
+
                         var element = d3.select(this);
                         element.style('fill', 'white');
                         element.transition().duration(300).style('fill', 'red');
@@ -199,6 +202,9 @@ floorplanApp.controller('FloorplanCtrl', function ($scope) {
 
                 spaces.elements.on("mouseout",
                     function (d, i) {
+
+                        if ($scope.spaceUseDemo) { return; }
+
                         d3.select(this).transition().duration(300).style('fill', 'none');
                         //$(this).popover('hide');
                         $scope.$apply(function () {
@@ -351,6 +357,30 @@ floorplanApp.controller('FloorplanCtrl', function ($scope) {
     $scope.onModalSave = function () {
         clearModal();
     };
+
+    $scope.onSpaceUseDemo = function () {
+        var spaces = $scope.fp.spaces.layer.selectAll('polygon');
+        if ($scope.spaceUseDemo) {
+
+            spaces.each(function () {
+                var rand = Math.floor((Math.random() * 3 ) + 1);
+                var color = 'blue';
+                if (rand === 1) {
+                    color = 'red';
+                } else if (rand === 2) {
+                    color = 'green';
+                }
+
+                d3.select(this).style('fill', 'white');
+                d3.select(this).transition().duration(300).style('fill', color);
+            });
+
+
+        } else {
+            //turn off the demo
+            spaces.transition().duration(300).style('fill', 'none');
+        }
+    }
 
 
 });
