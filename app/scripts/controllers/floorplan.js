@@ -98,7 +98,7 @@ floorplanApp.controller('FloorplanCtrl', function ($scope) {
         }
         d3.html(file, function (data) {
 
-            var svg, fp, viewBox, overlayPane, layerTypes;
+            var svg, viewBox, overlayPane, layerTypes;
 
             overlayPane = d3.select($scope.map.getPanes().markerPane); //attaching to Leaflets marker pane
 
@@ -107,9 +107,9 @@ floorplanApp.controller('FloorplanCtrl', function ($scope) {
             svg = d3.select("svg");
 
             //initialize the floor plan
-            fp = new ofp.FloorPlan(overlayPane.node(), floorPlan.layerTypes);
+            $scope.fp = new ofp.FloorPlan(overlayPane.node(), floorPlan.layerTypes);
 
-            viewBox = fp.getViewBox();
+            viewBox = $scope.fp.getViewBox();
 
             var minX = viewBox.x,
                 minY = viewBox.y,
@@ -170,10 +170,10 @@ floorplanApp.controller('FloorplanCtrl', function ($scope) {
 
             var spaces = null;
 
-            if (fp.spaces) {
-                spaces = fp.spaces;
-            }else if (fp.NET) {
-                spaces = fp.NET;
+            if ($scope.fp.spaces) {
+                spaces = $scope.fp.spaces;
+            }else if ($scope.fp.NET) {
+                spaces = $scope.fp.NET;
             }
 
             if (spaces) {
