@@ -6,22 +6,29 @@ View and Interact with SVG Floorplans using HTML5
 ## Development
 
 Requirements:
-NodeJS
-Yeoman (including Bower and Grunt) https://github.com/yeoman/yeoman/wiki/Getting-Started
+
+ - NodeJS
+ - Yeoman (including Bower and Grunt) https://github.com/yeoman/yeoman/wiki/Getting-Started
 
 Install using:
-npm install
-bower install
+
+    git clone https://github.com/openfloorplan/ofp-viewer.git
+    cd ofp-viewer
+    npm install
+    bower install
 
 Angular Bootstrap needs to be built seperately
-`cd /app/components/angular-ui-bootstrap
-npm install
-grunt
-grunt build`
+
+    cd app/components/angular-ui-bootstrap
+    npm install
+    grunt
+    grunt build
 
 
-Run server with:
-grunt server
+Return to root directrory and run server with:
+
+    cd ../../..
+    grunt server
 
 This code currently referencing a missing app/media folder that contains floorplans we use for demos.
 We are working on replacing the demos with data that we can share as part of the project.
@@ -38,5 +45,4 @@ It is included for demonstration purposes only.
 ## License
 
 OpenFloorPlan Viewer (ofp-viewer) is released under the MIT license, see LICENSE file.
-
 
