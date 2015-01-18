@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="JSLintConfiguration" html="true" css="true" json="true">
+  <component name="JSLintConfiguration" json="true">
     <option browser="true" />
     <option devel="true" />
     <option indent="4" />
@@ -9,4 +9,3 @@
     <option predef="L,d3,floorplanApp,angular,ofp" />
   </component>
 </project>
-

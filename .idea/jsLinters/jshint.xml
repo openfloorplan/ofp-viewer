@@ -13,7 +13,6 @@
     <option noempty="true" />
     <option nonew="true" />
     <option plusplus="false" />
-    <option regexp="false" />
     <option undef="true" />
     <option unused="false" />
     <option strict="true" />
@@ -22,7 +21,6 @@
     <option boss="false" />
     <option debug="false" />
     <option eqnull="false" />
-    <option es5="false" />
     <option esnext="false" />
     <option evil="false" />
     <option expr="false" />
@@ -35,8 +33,6 @@
     <option loopfunc="false" />
     <option multistr="false" />
     <option proto="false" />
-    <option onecase="false" />
-    <option regexdash="false" />
     <option scripturl="false" />
     <option smarttabs="false" />
     <option shadow="false" />
@@ -64,4 +60,3 @@
     <option predef="L,d3,angular,floorplanApp,ofp" />
   </component>
 </project>
-
