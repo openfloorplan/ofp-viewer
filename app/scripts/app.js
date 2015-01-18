@@ -1,4 +1,4 @@
-var floorplanApp = angular.module('floorplanApp', ['ui', 'ui.bootstrap'])
+var floorplanApp = angular.module('floorplanApp', ['ui', 'ui.bootstrap', 'ngRoute'])
         .config(function ($routeProvider, $locationProvider) {
             'use strict';
             $locationProvider.html5Mode(true);

@@ -1,13 +1,14 @@
 {
   "author": "SYNCADD Systems, Inc.",
   "name": "ofp-viewer",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "dependencies": {
-    "d3": "3.0.5",
-    "phantom": "0.3.5",
+    "compass": "^0.1.0",
+    "d3": "3.5.3",
     "gm": "1.8.1",
     "jsdom": "0.3.4",
-    "ofp.js": "git://github.com/openfloorplan/ofp.js.git"
+    "ofp.js": "git://github.com/openfloorplan/ofp.js.git",
+    "phantom": "0.3.5"
   },
   "devDependencies": {
     "grunt": "~0.4.1",
