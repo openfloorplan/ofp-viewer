@@ -1,3 +1,12 @@
+L.CRS.Simple2 = L.extend({}, L.CRS, {
+    projection: L.Projection.LonLat,
+    transformation: new L.Transformation(1, 0, -1, 0),
+
+    scale: function (zoom) {
+        return Math.pow(2, zoom);
+    }
+});
+
 floorplanApp.controller('FloorplanCtrl', function ($scope) {
     'use strict';
 
@@ -60,17 +69,24 @@ floorplanApp.controller('FloorplanCtrl', function ($scope) {
         projection: L.Projection.LonLat,
         transformation: new L.Transformation(1, 0, -1, 0),
 
-        scaleMult: 1,
+        scaleMult: null,
         scale: function (zoom) {
-            return Math.pow(2, zoom) * this.scaleMult;
+            if (this.scaleMult) {
+                return Math.pow(2, zoom) * this.scaleMult;
+            } else {
+                return Math.pow(2, zoom);
+            }
+
         },
         setScaleMult: function (scaleMultiplier) {
             this.scaleMult = scaleMultiplier;
         }
     });
 
+
+
     $scope.map = new L.Map('map', {
-        crs: L.CRS.NonProjectedFloorPlan,
+        crs: L.CRS.Simple2,
         center: [0.0, 0.0],
         worldCopyJump: false
     });
@@ -142,8 +158,6 @@ floorplanApp.controller('FloorplanCtrl', function ($scope) {
                 }
             }
 
-            //L.CRS.NonProjectedFloorPlan.setScaleMult(0.001);
-
             console.log(viewBox);
 
             //add background layers
@@ -161,7 +175,7 @@ floorplanApp.controller('FloorplanCtrl', function ($scope) {
             }
 
             //set map bounds
-            $scope.map.setMaxBounds(bounds);
+            //$scope.map.setMaxBounds(bounds);
             $scope.map.fitBounds(bounds);
             var mapBounds  = $scope.map.getBounds();
             var boundsZoom = $scope.map.getBoundsZoom(bounds, true);
