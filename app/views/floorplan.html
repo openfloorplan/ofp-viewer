@@ -6,11 +6,18 @@
         </select>
     </div>
     <div class="leaflet-bottom leaflet-left"><h6>Selection: {{hoverStatus}}</h6></div>
+    <div class="leaflet-bottom leaflet-right">
+        <button type="button" class="btn btn-primary leaflet-control" ng-model="spaceUseDemo" ng-change="onSpaceUseDemo();" btn-checkbox btn-checkbox-true="1" btn-checkbox-false="0">
+            DEMO
+        </button>
+    </div>
 </div>
 <div ui-modal ng-model="modalShown" id="myModal">
     <div class="modal-header">
         <h4>Space: {{selectedSpaceID}}</h4>
     </div>
+
+
     <div class="modal-body"  id="myModal-body">
         <div class="container-fluid">
             <div class="row-fluid">
@@ -24,7 +31,7 @@
             </div>
         </div>
 
-    </div>
+
     <div class="modal-footer">
         <div class="row-fluid">
             <div class="btn-toolbar span5">
