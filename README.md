@@ -48,11 +48,12 @@ In the mean time, you will need to reconfigure it to use your own floorplans.
 
 ## Demo Data
 
-The demo data included with this project is from http://www.physics.ohio-state.edu/fac_engr/flr_plans.html
+This project uses SVG data converted from CAD floorplans such as this example http://www.physics.ohio-state.edu/fac_engr/flr_plans.html
 
 (It isn't easy to find good public CAD data, they deserve credit for publishing their CAD files online.)
 
-It is included for demonstration purposes only.
+You will need to convert the DWG files into SVG using something like GDAL ogr2ogr http://www.gdal.org/drv_cad.html
+
 
 ## Setting up Your Own Floor Plans
 
