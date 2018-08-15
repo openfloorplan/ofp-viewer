@@ -81,7 +81,7 @@ Specifically you will need to configure a layer type for each group of polygons 
 ofp.LayerType('MyName', ‘my-class-name', [‘d3 selector string']);
 ```
 
-The first argument is just a name you pick, the second is a class name you also pick that is injected into the SVG to simplify future interactions (e.g. applying style changes with a class), then last one is the important one. That is a D3.js selector (similar to JQuery selectors) that selects the the SVG group tag (<g>) that has that id. 
+The first argument is just a name you pick, the second is a class name you also pick that is injected into the SVG to simplify future interactions (e.g. applying style changes with a class), then last one is the important one. That is a D3.js selector (similar to JQuery selectors) that selects the SVG group tag (<g>) that has that id. 
 
 ----------------
 
